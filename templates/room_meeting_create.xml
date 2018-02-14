@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serv:message xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <header>
+                <securityContext>
+                        <webExID>%s</webExID>
+                        <password>%s</password>
+                        <siteName>%s</siteName>
+                </securityContext>
+        </header>
+        <body>
+                <bodyContent xsi:type="java:com.webex.service.binding.meeting.CreateMeeting">
+                        <metaData>
+                                <confName>%s</confName>
+                                <meetingType>564</meetingType>
+                        </metaData>
+                        <enableOptions>
+                                <chat>true</chat>
+                                <poll>true</poll>
+                                <audioVideo>true</audioVideo>
+                        </enableOptions>
+                        <schedule>
+                                <startDate>%s</startDate>
+                                <openTime>300</openTime>
+                                <duration>60</duration>
+                                <timeZoneID>20</timeZoneID>
+                        </schedule>
+                        <telephony>
+                                <telephonySupport>CALLBACK</telephonySupport>
+                        </telephony>
+                </bodyContent>
+        </body>
+</serv:message>
