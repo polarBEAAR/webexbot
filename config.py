@@ -18,8 +18,5 @@ class Config:
 def test():
 	c = Config('config.yml')
 	print c.cfg
-	print c.getSection('mysql')
-	print c.getParam('mysql', 'host')
-	print c.getParam('slack', 'token')
+	print c.getParam('slack', 'username')
 
-test()
