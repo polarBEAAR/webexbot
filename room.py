@@ -64,6 +64,7 @@ class Room:
 				print 'analyze started'
 				print 'tree:'
 				print tree
+				
 			self.analyzeMeetingXML(tree)
 			if self.log: print 'analyze meeting done'
 			body = tree.find('{http://www.webex.com/schemas/2002/06/service}body')
@@ -125,6 +126,7 @@ class Room:
 	tallnames = {'{http://www.webex.com/schemas/2002/06/service}tollFreeNum': 'Call-in toll-free number (US/Canada)', '{http://www.webex.com/schemas/2002/06/service}tollNum': 'Call-in toll number (US/Canada)'}
 	
 	def getMeetingDetails(self, key):
+		print 'getMeetingDetails: ', key
 		xml = open('templates/room_meeting_details.xml', 'rt').read() % (self.username, self.password, self.sitename, key)
 		headers = {'Content-Type': 'text/xml'}
 		resp = self.checkMeetingDetailsFile(key)
@@ -134,35 +136,43 @@ class Room:
 			f = open("meetings/%s" % key, "wt")
 			f.write(resp)
 			f.close()
-		tree = ET.fromstring(resp)
-		prop = {}
-		body = tree.find('{http://www.webex.com/schemas/2002/06/service}body')
-		bodycontent = body.find('{http://www.webex.com/schemas/2002/06/service}bodyContent')
-		hostKey = bodycontent.find('{http://www.webex.com/schemas/2002/06/service/meeting}hostKey')
-		print 'hostkey:', hostKey
-		repeat = bodycontent.find('{http://www.webex.com/schemas/2002/06/service/meeting}repeat')
-		repeattype = repeat.find('{http://www.webex.com/schemas/2002/06/service/meeting}repeatType')
-		prop['repeat'] = repeattype.text
-		prop['hostKey'] = hostKey.text
-		if repeattype.text == "WEEKLY":
-			days = []
-			dayInWeek = repeat.find('{http://www.webex.com/schemas/2002/06/service/meeting}dayInWeek')
-			for i in dayInWeek.findall('*'):
-				days.append(self.weekDays[i.text])
-			prop['days'] = days
-		callindic = {}
 		try:
-			call = bodycontent.find('{http://www.webex.com/schemas/2002/06/service/meeting}telephony')
-			print 'call: ', call
-			callin = call.find('{http://www.webex.com/schemas/2002/06/service/meeting}callInNum')
-			print 'callin: ', callin
-			for i in callin.findall('*'):
-				if i.tag in self.tallnames.keys():
-					callindic[self.tallnames[i.tag]] = i.text
+			tree = ET.fromstring(resp)
+			prop = {}
+			body = tree.find('{http://www.webex.com/schemas/2002/06/service}body')
+			bodycontent = body.find('{http://www.webex.com/schemas/2002/06/service}bodyContent')
+			hostKey = bodycontent.find('{http://www.webex.com/schemas/2002/06/service/meeting}hostKey')
+			print 'hostkey:', hostKey
+			repeat = bodycontent.find('{http://www.webex.com/schemas/2002/06/service/meeting}repeat')
+			repeattype = repeat.find('{http://www.webex.com/schemas/2002/06/service/meeting}repeatType')
+			prop['repeat'] = repeattype.text
+			prop['hostKey'] = hostKey.text
+			if repeattype.text == "WEEKLY":
+				days = []
+				dayInWeek = repeat.find('{http://www.webex.com/schemas/2002/06/service/meeting}dayInWeek')
+				for i in dayInWeek.findall('*'):
+					days.append(self.weekDays[i.text])
+				prop['days'] = days
+			callindic = {}
+			try:
+				call = bodycontent.find('{http://www.webex.com/schemas/2002/06/service/meeting}telephony')
+				print 'call: ', call
+				callin = call.find('{http://www.webex.com/schemas/2002/06/service/meeting}callInNum')
+				print 'callin: ', callin
+				for i in callin.findall('*'):
+					if i.tag in self.tallnames.keys():
+						callindic[self.tallnames[i.tag]] = i.text
+			except:
+				print 'error in searching for call-in numbers'
+			print 'callin dic: ', callindic
+			prop['callin'] = callindic
 		except:
-			print 'error in searching for call-in numbers'
-		print 'callin dic: ', callindic
-		prop['callin'] = callindic
+			print 'error in getMeetingsDetails'
+			print 'request-----------------------'
+			print xml
+			print 'responce----------------------'
+			print resp
+			print '------------------------------'
 		return prop
 	
 	def getMeetingURL(self, key):
