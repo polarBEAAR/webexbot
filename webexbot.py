@@ -25,9 +25,6 @@ class WebExBot:
 		cr = self.config.getSection('rooms')
 		for room in cr.keys():
 			self.creds.append((room, cr[room]['passwd']))
-		#f = open('slack_token', 'rt')
-		#self.token = f.read()
-		#f.close()
 		self.token = self.config.getParam('slack', 'token')
 		self.sc = None
 		self.chan_name = self.config.getParam('slack', 'channel')
@@ -53,7 +50,6 @@ class WebExBot:
 			print("StarterBot connected and running!")
 			READ_WEBSOCKET_DELAY = 1
 			while True:
-				#print 'Next iter'
 				events = self.sc.rtm_read()
 				for event in events:
 					if ('channel' in event and 'text' in event and event.get('type') == 'message'):
@@ -65,7 +61,6 @@ class WebExBot:
 								print "check started"
 								self.sc.api_call("chat.postMessage", as_user="false", channel=self.chan, text='Checking webex rooms', username=self.username)
 								att = self.checkWebEx()
-								print att
 								self.sc.api_call("chat.postMessage", as_user="false", channel=self.chan, text="Current and future meetings:", attachments = att, username=self.username)
 							elif text == "help":
 								self.sc.api_call("chat.postMessage", as_user="false", channel=self.chan, text='Possible commands are:\nactive - to check active and future meetings\nhelp - to display this message\ncreate|room|name|GMT date', username=self.username)
@@ -75,14 +70,11 @@ class WebExBot:
 									room = params[1]
 									name = params[2]
 									dat = params[3]
-									print room
-									print name
-									print dat
 									dic = self.createMeeting(room, name, dat)
+									print 'createMeeting finished'
 									audio = ""
 									for i, j in dic['callin'].items():
 										audio += "%s %s\n" % (j, i)
-									print 'audio: ', audio
 									msg = {}
 									msg["mrkdwn_in"] = ["title", "text"]
 									msg['title'] = "Message for passing to the customer:"
@@ -117,8 +109,10 @@ Access code: %s\n""" % ("%s GMT" % dat, dic['key'], dic['inviteURL'], dic['hostK
 	
 	def checkWebEx(self):
 		t = []
+		#logins = self.creds.keys()
+		#logins.sort()
+		self.creds.sort()
 		for (u, p) in self.creds:
-			#r = Room(u, p, log = (u == "mirantis_operations")):
 			r = Room(self.config, u, p, query = True)
 			t = t + r.getInfo()
 		return t
@@ -132,8 +126,12 @@ Access code: %s\n""" % ("%s GMT" % dat, dic['key'], dic['inviteURL'], dic['hostK
 				d.update(r.getMeetingDetails(d['key']))
 				try:
 					self.G.createEvent(time.mktime(datetime.datetime.strptime(meetingUTCTime, '%m/%d/%Y %H:%M:%S').timetuple()), meetingName, i, d['inviteURL'])
-				except:
+				except Exception as inst:
+					print type(inst)     # the exception instance
+					print inst.args      # arguments stored in .args
+					print inst 
 					print 'Google event create error'
+					raise
 				print d
 				return d
 

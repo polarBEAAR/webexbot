@@ -68,7 +68,6 @@ class GoogleEventer:
 			},
 		}
 		event = self.service.events().insert(calendarId=self.calendar_name, body=event).execute()
-		print 'Event created: %s' % (event.get('htmlLink'))
 
 def main():
 	G = GoogleEventer()
