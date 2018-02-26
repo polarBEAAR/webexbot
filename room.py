@@ -39,8 +39,8 @@ class Room:
 			while True:
 				(downloaded, total) = self.queryMeetings(m_num + 1)
 				print 'downloaded: ', downloaded, ' total: ', total
-				if m_num > 0:
-					break
+				#if m_num > 0:
+				#	break
 				m_num += downloaded
 				
 				if m_num >= total:
