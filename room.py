@@ -30,11 +30,11 @@ class Room:
 		self.url = "https://%s.webex.com/WBXService/XMLService" % self.sitename
 		self.log = log
 		m_num = 0
-		directory = './meetings'
-		try:
-			os.stat(directory)
-		except:
-			os.mkdir(directory) 
+		for directory in ['./meetings', './meeting_links']:
+			try:
+				os.stat(directory)
+			except:
+				os.mkdir(directory) 
 		if query:
 			while True:
 				(downloaded, total) = self.queryMeetings(m_num + 1)
@@ -164,7 +164,6 @@ class Room:
 						callindic[self.tallnames[i.tag]] = i.text
 			except:
 				print 'error in searching for call-in numbers'
-			print 'callin dic: ', callindic
 			prop['callin'] = callindic
 		except:
 			print 'error in getMeetingsDetails'
@@ -178,7 +177,7 @@ class Room:
 	def getMeetingURL(self, key):
 		xml = open('templates/room_meeting_URL.xml', 'rt').read() % (self.username, self.password, self.sitename, key)
 		headers = {'Content-Type': 'text/xml'}
-		fname = "meetings_links/%s" % key
+		fname = "meeting_links/%s" % key
 		resp = None
 		if os.path.isfile(fname):
 			f = open(fname, "rt")
@@ -186,9 +185,9 @@ class Room:
 			f.close()
 		else:
 			resp = requests.post(self.url, data=xml, headers=headers).text
-		f = open(fname, "wt")
-		f.write(resp)
-		f.close()
+			f = open(fname, "wt")
+			f.write(resp)
+			f.close()
 		tree = ET.fromstring(resp)
 		prop = {}
 		body = tree.find('{http://www.webex.com/schemas/2002/06/service}body')

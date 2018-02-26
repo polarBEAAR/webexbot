@@ -1,4 +1,5 @@
 *.pyc
 venv
 meetings
+meeting_links
 config.yml
