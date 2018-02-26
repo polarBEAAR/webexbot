@@ -43,12 +43,10 @@ class Meeting:
 				self.hostKey = i.text
 		self.details = self.room.getMeetingDetails(self.key)
 		self.time_st = time.strptime(self.remTime + ' GMT', self.datefmt + ' %Z')
-		print "1: ", time.strftime(self.datefmt, time.gmtime(calendar.timegm(self.time_st)))
 		tz_ = self.tz[3:].split(':')
 		self.tz_shift = int(tz_[0]) * 60 + int(tz_[1])
 		self.time_gmt_fl = calendar.timegm(self.time_st) - self.tz_shift * 60
 		self.time_gmt = time.gmtime(self.time_gmt_fl)
-		print "2: ", self.__str__()
 	
 	def getRow(self):
 		repeat = 'NONE'
@@ -66,8 +64,7 @@ class Meeting:
 		return (self.status == 'INPROGRESS') or ((self.time_gmt_fl > time.time()) and (self.time_gmt_fl > time.time() + 24 * 60 * 60))
 	
 	def isValid(self):
-		#return (self.status == 'INPROGRESS') or (self.time_gmt_fl > time.time() + time.timezone) or (self.details["repeat"] != "NO_REPEAT")
-		return (self.status == 'INPROGRESS') or (self.time_gmt_fl > time.time()) or (self.details["repeat"] != "NO_REPEAT")
+		return (self.status == 'INPROGRESS') or (self.time_gmt_fl > time.time()) or (self.details.has_key('repeat') and self.details["repeat"] != "NO_REPEAT")
 	def getInfo(self):
 		res = {}
 		res["title"] = self.name
@@ -77,5 +74,4 @@ class Meeting:
 		res["ts"] = "%i" % int(self.time_gmt_fl)
 		res["mrkdwn_in"] = ["title", "text"]
 		return res
-
 
