@@ -6,15 +6,15 @@ After=network.target
 [Service]
 Type=forking
 PIDFile=/tmp/bot.pid
-WorkingDirectory=/srv/webexbot
+WorkingDirectory=/srv/webexbot.git
 
 User=root
 Group=root
 
 OOMScoreAdjust=-1000
 
-ExecStart=/bin/bash /srv/webexbot/run.sh
-ExecStop=/bin/bash /srv/webexbot/stop_bot.sh
+ExecStart=/bin/bash /srv/webexbot.git/run.sh
+ExecStop=/bin/bash /srv/webexbot.git/stop_bot.sh
 TimeoutSec=300
 Restart=always
 

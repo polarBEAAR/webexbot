@@ -14,13 +14,13 @@ class GoogleEventer:
 	
 	def __init__(self, config):
 		self.config = config
-		self.credentials = self.get_credentials()
-		self.http = self.credentials.authorize(httplib2.Http())
-		self.service = discovery.build('calendar', 'v3', http=self.http)
 		self.SCOPES = self.config.getParam('google', 'scopes')
 		self.CLIENT_SECRET_FILE = self.config.getParam('google', 'secret_file')
 		self.APPLICATION_NAME = self.config.getParam('google', 'appname')
 		self.calendar_name = self.config.getParam('google', 'calendar_name')
+		self.credentials = self.get_credentials()
+		self.http = self.credentials.authorize(httplib2.Http())
+		self.service = discovery.build('calendar', 'v3', http=self.http)
 	
 	def get_credentials(self):
 		"""Gets valid user credentials from storage.
@@ -39,11 +39,12 @@ class GoogleEventer:
 		credential_path = self.config.getParam('google', 'cred_file')
 		self.store = Storage(credential_path)
 		credentials = self.store.get()
+		flags = []
 		if not credentials or credentials.invalid:
 			flow = client.flow_from_clientsecrets(self.CLIENT_SECRET_FILE, self.SCOPES)
 			flow.user_agent = self.APPLICATION_NAME
-			if flags:
-				credentials = tools.run_flow(flow, self.store, flags)
+			if True:
+				credentials = tools.run_flow(flow, self.store)
 			else: # Needed only for compatibility with Python 2.6
 				credentials = tools.run(flow, self.store)
 			print 'Storing credentials to ' + credential_path

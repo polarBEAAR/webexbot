@@ -35,15 +35,19 @@ class WebExBot:
 		print 'google eventer created'
 	
 	def connect(self):
+		print 'connect:'
 		self.sc = SlackClient(self.token)
 		groups = self.sc.api_call('groups.list', token = self.token)
+		print groups
 		for gr in groups['groups']: 
 			if gr['name'] == self.chan_name:
+				print 'private channel found'
 				self.chan = gr['id']
 		groups = self.sc.api_call('channels.list', token = self.token)
 		for gr in groups['channels']:
 			if gr['name'] == self.chan_name:
 				self.chan = gr['id']
+				print 'public channel found'
 	
 	def run(self):
 		if self.sc.rtm_connect():
