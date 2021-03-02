@@ -50,11 +50,11 @@ class GoogleEventer:
 			print 'Storing credentials to ' + credential_path
 		return credentials
 	
-	def createEvent(self, gmtStart, summary, location, desc, duration = 60):
+	def createEvent(self, gmtStart, summary, location, desc, user_name, duration = 60):
 		event = {
 			'summary': summary,
 			'location': location,
-			'description': desc,
+			'description': user_name + '\n' + desc,
 			'start': {
 				'dateTime': datetime.datetime.fromtimestamp(gmtStart).isoformat(),
 				'timeZone': 'UTC',

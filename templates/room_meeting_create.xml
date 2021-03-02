@@ -9,6 +9,9 @@
         </header>
         <body>
                 <bodyContent xsi:type="java:com.webex.service.binding.meeting.CreateMeeting">
+                        <accessControl>
+                               <meetingPassword>Mirantis01</meetingPassword>
+                        </accessControl>
                         <metaData>
                                 <confName>%s</confName>
                                 <meetingType>564</meetingType>

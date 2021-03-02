@@ -1,5 +1,8 @@
 *.pyc
+*.backup
 venv
 meetings
 meeting_links
 config.yml
+google_cred.json*
+secret.json*

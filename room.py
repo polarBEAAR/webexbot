@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
 import os
 from slackclient import SlackClient
-
+from config import Config
 #from datetime import datetime
 #from dateutil import parser
 import time
@@ -199,12 +199,16 @@ class Room:
 	def createMeeting(self, meetingname, meetingUTCTime):
 		#timezone 21 = GMT
 		xml = open('templates/room_meeting_create.xml', 'rt').read() % (self.username, self.password, self.sitename, meetingname, meetingUTCTime)
+		#print xml
 		headers = {'Content-Type': 'text/xml'}
 		resp = requests.post(self.url, data=xml, headers=headers).text
 		tree = ET.fromstring(resp)
+		#testtree = ET.ElementTree(tree)
+		#print testtree.write('tree.xml'), type(tree)
 		body = tree.find('{http://www.webex.com/schemas/2002/06/service}body')
 		bodyContent = body.find('{http://www.webex.com/schemas/2002/06/service}bodyContent')
 		key = bodyContent.find('{http://www.webex.com/schemas/2002/06/service/meeting}meetingkey')
+		print key.text
 		iCalendar = bodyContent.find('{http://www.webex.com/schemas/2002/06/service/meeting}iCalendarURL')
 		host = iCalendar.find('{http://www.webex.com/schemas/2002/06/service}host')
 		return {'key': key.text}
@@ -219,3 +223,10 @@ class Room:
 
 
 
+
+if __name__=='__main__':
+	test = Room(Config('config.yml'),'sto3','arsUcaus1')
+	try:
+		test.createMeeting('mmazepa_test','2/10/2020 09:30:00')
+	except Exception as exc:
+		print exc
